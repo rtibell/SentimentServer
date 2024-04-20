@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 class SentimentRequest():
@@ -16,8 +15,9 @@ class SentimentResponse():
     def serialize(self):
         return {"label": self.label,
                 "score": self.score}
-
-tokenizer = AutoTokenizer.from_pretrained("KBLab/megatron-bert-large-swedish-cased-165k")
+print("Load tokenizer...")
+tokenizer = AutoTokenizer.from_pretrained("KBLab/megatron-bert-large-swedish-cased-165k") #, cash_dir="./cache", force_download=True)
+print("Load model...")
 model = AutoModelForSequenceClassification.from_pretrained("KBLab/robust-swedish-sentiment-multiclass")
 
 print("start classifier...")
@@ -35,7 +35,7 @@ def compute_sentiment():
     result = results[0]
     ret_val = SentimentResponse(result['label'], result['score'])
     print("ret_val", ret_val)
-    return jsonify(ret_val.serialize()), 201
+    return jsonify(ret_val.serialize()), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8090)
